@@ -514,17 +514,17 @@ BRAND_VIDEO_CONFIG = {
         "flat_bg": "#0A1F3C",          # deep navy -- replaces the finance #060F1A
         "accent_primary": "#7CFC00",   # electric green
         "accent_secondary": "#FFD166", # gold (shared with fm_ library constants)
-        "music_style": "modern corporate background music, clean piano melody with light electronic percussion, mid tempo, professional and optimistic, similar to LinkedIn or business explainer video music, no tribal sounds, no nature sounds, no drums, no ethnic instruments, no vocals, instrumental only",
+        "music_style": "modern corporate electronic, confident, mid tempo, clean synth pulse, optimistic, instrumental, no vocals",
     },
     "be_neutral_now": {
         "flat_bg": "#0E2A1C",          # deep green
         "accent_primary": "#8BC34A",   # leaf green
         "accent_secondary": "#E6B84C", # warm gold
-        "music_style": "modern positive background music, light piano with gentle electronic beats, clean and contemporary, similar to a feel-good explainer video or app commercial, hopeful and warm but modern, absolutely no tribal drums, no nature sounds, no ethnic instruments, no acoustic guitar, no forest ambience, no vocals, instrumental only",
+        "music_style": "warm acoustic electronic hybrid, hopeful, gentle rhythm, organic textures, uplifting, instrumental, no vocals",
     },
 }
 
-BRAND_MUSIC_DUCK_VOLUME = 0.22   # music level while narration is present
+BRAND_MUSIC_DUCK_VOLUME = 0.08   # music level while narration is present
 BRAND_MUSIC_FADEOUT_S   = 2.0    # fade out over the final N seconds
 BRAND_MUSIC_CACHE_DIR   = os.path.join(os.path.dirname(os.path.abspath(__file__)), "bg_musics", "generated")
 
