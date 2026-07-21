@@ -514,13 +514,13 @@ BRAND_VIDEO_CONFIG = {
         "flat_bg": "#0A1F3C",          # deep navy -- replaces the finance #060F1A
         "accent_primary": "#7CFC00",   # electric green
         "accent_secondary": "#FFD166", # gold (shared with fm_ library constants)
-        "music_style": "modern corporate electronic, confident, mid tempo, clean synth pulse, optimistic, instrumental, no vocals",
+        "music_style": "modern corporate background music, clean piano melody with light electronic percussion, mid tempo, professional and optimistic, similar to LinkedIn or business explainer video music, no tribal sounds, no nature sounds, no drums, no ethnic instruments, no vocals, instrumental only",
     },
     "be_neutral_now": {
         "flat_bg": "#0E2A1C",          # deep green
         "accent_primary": "#8BC34A",   # leaf green
         "accent_secondary": "#E6B84C", # warm gold
-        "music_style": "warm acoustic electronic hybrid, hopeful, gentle rhythm, organic textures, uplifting, instrumental, no vocals",
+        "music_style": "modern positive background music, light piano with gentle electronic beats, clean and contemporary, similar to a feel-good explainer video or app commercial, hopeful and warm but modern, absolutely no tribal drums, no nature sounds, no ethnic instruments, no acoustic guitar, no forest ambience, no vocals, instrumental only",
     },
 }
 
@@ -1015,8 +1015,7 @@ def _probe_clip_health(filepath: str) -> tuple[bool, str]:
 
 @app.on_event("startup")
 async def startup_event():
-    print("🚀 Be Neutral Now starting...")
-
+    print("🚀 Video Gen starting...")
 
 def _bgr(r, g, b):
     """Convenience: define colors in RGB, return BGR for OpenCV."""
@@ -4432,13 +4431,18 @@ def process_video(niche: str = "finance"):
         print(f"\n❌ FAILED: {e}")
         traceback.print_exc()
 
+BRAND_AUDIO_GITHUB_URL = (
+    "https://raw.githubusercontent.com/energyleads26-sudo/video-gen/main/"
+    "Audio_Voice/vaults_narration.mp3"
+)
+
+
 @app.post("/generate_brand")
 async def generate_brand_video_api(background_tasks: BackgroundTasks,
-                                   audio_url: str, brand: str,
-                                   topic_hint: str = ""):
-    """Brand video entry point for n8n. n8n generates the narration audio
-    upstream (ElevenLabs) and sends its URL here along with the brand:
-    'energy_center_usa' or 'be_neutral_now'."""
+                                   brand: str, topic_hint: str = ""):
+    """Brand video entry point for n8n. n8n pushes the narration audio to
+    GitHub first, then calls this endpoint with just the brand name.
+    The server always fetches the latest audio from the raw GitHub URL."""
     global current_job
     if current_job["status"] == "processing":
         return {"message": "Already processing", "status": "processing"}
@@ -4447,11 +4451,11 @@ async def generate_brand_video_api(background_tasks: BackgroundTasks,
     current_job = {"status": "processing", "progress": 0, "output": None,
                    "error": None, "started_at": datetime.now().isoformat(),
                    "niche": f"brand:{brand}"}
-    background_tasks.add_task(process_brand_video, audio_url, brand, topic_hint)
+    background_tasks.add_task(process_brand_video, brand, topic_hint)
     return {"message": f"Started brand={brand}", "status": "processing"}
 
 
-def process_brand_video(audio_url: str, brand: str, topic_hint: str = ""):
+def process_brand_video(brand: str, topic_hint: str = ""):
     global current_job
     try:
         current_job["progress"] = 5
@@ -4460,16 +4464,14 @@ def process_brand_video(audio_url: str, brand: str, topic_hint: str = ""):
         output_file = f"{brand}_output.mp4"
         trans_file = f"{os.path.splitext(audio_file)[0]}_transcription.json"
 
-        print(f"\n📥 Downloading narration audio...")
-        resp = requests.get(audio_url, timeout=60)
+        print(f"\n📥 Downloading narration audio from GitHub...")
+        resp = requests.get(BRAND_AUDIO_GITHUB_URL, timeout=60)
         if resp.status_code != 200:
             raise Exception(f"Audio download HTTP {resp.status_code}")
         with open(audio_file, "wb") as f:
             f.write(resp.content)
         print(f"  ✅ {len(resp.content)//1024}KB")
 
-        # A fresh narration invalidates any cached transcription of the
-        # previous one at the same path.
         for old in [output_file, trans_file]:
             if os.path.exists(old):
                 os.remove(old)
