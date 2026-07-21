@@ -1015,31 +1015,7 @@ def _probe_clip_health(filepath: str) -> tuple[bool, str]:
 
 @app.on_event("startup")
 async def startup_event():
-    print("🚀 Vaults of History v3 starting...")
-    broll_dirs = ['space_vids','ancient_ruins_vids','cosmic_vids',
-                  'dark_sky_vids','temple_vids']
-    print("📁 Broll folder audit:")
-    bad_clips = []
-    for d in broll_dirs:
-        if os.path.exists(d):
-            files = [f for f in os.listdir(d) if f.lower().endswith(('.mp4','.mov','.avi'))]
-            status = f"✅ {len(files)} clips" if files else "❌ EMPTY -- add Seedance clips here"
-            print(f"  {d}: {status}")
-            for f in files:
-                fpath = os.path.join(d, f)
-                healthy, reason = _probe_clip_health(fpath)
-                if not healthy:
-                    bad_clips.append((fpath, reason))
-        else:
-            print(f"  {d}: ❌ MISSING -- folder doesn't exist")
-
-    if bad_clips:
-        print("⚠️  BROKEN CLIPS DETECTED (these will render as black filler):")
-        for fpath, reason in bad_clips:
-            print(f"    ✗ {fpath} -- {reason}")
-        print(f"  → Replace or remove these {len(bad_clips)} file(s) to eliminate black segments.")
-    else:
-        print("  ✅ All clips passed health check")
+    print("🚀 Be Neutral Now starting...")
 
 
 def _bgr(r, g, b):
