@@ -1,0 +1,89 @@
+VIDEO PIPELINE — SETUP NOTES
+=============================
+
+1. FIRST RUN SETUP
+------------------
+Run this once after cloning the repo:
+
+    python setup_folders.py
+
+This creates all required directories and .gitkeep files.
+
+
+2. REQUIRED FILES (not in repo, add manually)
+---------------------------------------------
+
+sfx/ — sound effect MP3 files referenced in SFX_MAP inside main.py:
+    alexzavesa-swoosh-1-463607.mp3
+    universfield-new-notification-010-352755.mp3
+    universfield-new-notification-013-363676.mp3
+    universfield-new-notification-014-363678.mp3
+    freesound_community-punch-boxing-02wav-14897.mp3
+    dragon-studio-mouse-click-4-393911.mp3
+
+fonts/ — any custom fonts used by the pipeline
+    Add whatever .ttf or .otf files your system prompt references.
+    If none, the pipeline falls back to system fonts.
+
+bg_musics/ — static fallback music files (optional but recommended)
+    finance_ambient.mp3
+    dark_ambient.mp3
+    These are used if Eleven Music generation fails.
+
+
+3. ENVIRONMENT VARIABLES (.env)
+--------------------------------
+Create a .env file in the project root with:
+
+    OPENAI_API_KEY=your_openai_key_here
+    ELEVENLABS_API_KEY=your_elevenlabs_key_here
+    ATLAS_API_KEY=your_atlas_cloud_key_here
+
+
+4. BACKGROUND IMAGE LIBRARY
+-----------------------------
+backgrounds/energy_center_usa/ and backgrounds/be_neutral_now/ start empty.
+The pipeline auto-generates and caches 10 images per brand on first run.
+After that, images are reused and no new Atlas Cloud calls are made
+unless you delete images from those folders.
+
+
+5. MANIM CACHE (auto-managed, /tmp/)
+--------------------------------------
+/tmp/finance_explainer_manim_cache/   — rendered chunk clips
+/tmp/finance_explainer_manim_logs/    — failure logs per chunk
+/tmp/finance_explainer_manim_sources/ — GPT-generated source per chunk
+
+These live in /tmp and are cleared on server restart. That is intentional.
+
+
+6. N8N ENDPOINTS
+-----------------
+POST /generate_brand?audio_url=<url>&brand=energy_center_usa
+POST /generate_brand?audio_url=<url>&brand=be_neutral_now
+GET  /status
+GET  /download
+
+Original finance pipeline:
+POST /generate?niche=finance
+GET  /status
+GET  /download
+
+
+7. DIRECTORY STRUCTURE OVERVIEW
+---------------------------------
+project/
+├── main.py
+├── functions_manim.py
+├── setup_folders.py
+├── .env                          ← not in repo
+├── Audio_Voice/                  ← downloaded narration audio
+├── bg_musics/
+│   ├── finance_ambient.mp3       ← not in repo, add manually
+│   ├── dark_ambient.mp3          ← not in repo, add manually
+│   └── generated/                ← Eleven Music cached beds
+├── sfx/                          ← not in repo, add manually
+├── fonts/                        ← not in repo, add manually
+└── backgrounds/
+    ├── energy_center_usa/        ← auto-generated on first run
+    └── be_neutral_now/           ← auto-generated on first run
