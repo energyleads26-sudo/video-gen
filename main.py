@@ -408,8 +408,9 @@ def _generate_one_background_image(brand: str) -> str:
     prediction_id = resp.json()["data"]["id"]
 
     image_url = None
-    for _ in range(30):
-        _time.sleep(2)
+    # Poll for up to 5 minutes -- high quality image gen takes 2-3 min
+    for attempt in range(60):
+        _time.sleep(5)
         poll = requests.get(
             f"https://api.atlascloud.ai/api/v1/model/prediction/{prediction_id}",
             headers={"Authorization": f"Bearer {ATLAS_API_KEY}"},
@@ -514,13 +515,13 @@ BRAND_VIDEO_CONFIG = {
         "flat_bg": "#0A1F3C",          # deep navy -- replaces the finance #060F1A
         "accent_primary": "#7CFC00",   # electric green
         "accent_secondary": "#FFD166", # gold (shared with fm_ library constants)
-        "music_style": "modern corporate electronic, confident, mid tempo, clean synth pulse, optimistic, instrumental, no vocals",
+        "music_style": "modern corporate background music, clean piano melody with light electronic percussion, mid tempo, professional and optimistic, similar to LinkedIn or business explainer video music, no tribal sounds, no nature sounds, no drums, no ethnic instruments, no vocals, instrumental only",
     },
     "be_neutral_now": {
         "flat_bg": "#0E2A1C",          # deep green
         "accent_primary": "#8BC34A",   # leaf green
         "accent_secondary": "#E6B84C", # warm gold
-        "music_style": "warm acoustic electronic hybrid, hopeful, gentle rhythm, organic textures, uplifting, instrumental, no vocals",
+        "music_style": "modern positive background music, light piano with gentle electronic beats, clean and contemporary, similar to a feel-good explainer video or app commercial, hopeful and warm but modern, absolutely no tribal drums, no nature sounds, no ethnic instruments, no acoustic guitar, no forest ambience, no vocals, instrumental only",
     },
 }
 
@@ -801,7 +802,11 @@ def render_brand_video(audio_path: str, brand: str, output_path: str,
 
     # --- ENGINEER: beats -> chunks -> code -> render (existing pipeline) ---
     word_list = build_whisper_word_list(segments)
-    beats = analyze_story_beats(transcript_text, segments, duration)
+    beats_result = analyze_story_beats(transcript_text, segments,
+                                       topic_hint or brand, duration)
+    beats = beats_result.get('beats', []) if isinstance(beats_result, dict) else beats_result
+    if not beats:
+        raise Exception("Story beat analysis returned no beats")
     beats = realign_beat_times(beats, word_list)
     chunks = group_beats_into_manim_chunks(beats)
     restore = _branded_boilerplate_swap(brand)
