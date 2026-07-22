@@ -1,0 +1,152 @@
+[
+  {
+    "id": "bg_01",
+    "image_path": "/home/selwyn/Documents/Automation-experiments/Jims Video Gen/backgrounds/energy_center_usa/bg_01.png",
+    "dominant_colors": [
+      "#353E27",
+      "#92A7BB",
+      "#DDD3C2"
+    ],
+    "description": "A modern house with a large lawn during sunset.",
+    "mood": "calm",
+    "open_space_location": "lower-left",
+    "aligns_with_brand": true,
+    "reason": "Photorealistic suburban home, correct for brand",
+    "created_at": "2026-07-22T20:57:39.805784"
+  },
+  {
+    "id": "bg_02",
+    "image_path": "/home/selwyn/Documents/Automation-experiments/Jims Video Gen/backgrounds/energy_center_usa/bg_02.png",
+    "dominant_colors": [
+      "#333624",
+      "#5E7C9F",
+      "#CCB7A0"
+    ],
+    "description": "House with city skyline in the background at sunset.",
+    "mood": "calm",
+    "open_space_location": "center",
+    "aligns_with_brand": true,
+    "reason": "Photorealistic suburban home, correct for brand",
+    "created_at": "2026-07-22T20:59:55.666871"
+  },
+  {
+    "id": "bg_03",
+    "image_path": "/home/selwyn/Documents/Automation-experiments/Jims Video Gen/backgrounds/energy_center_usa/bg_03.png",
+    "dominant_colors": [
+      "#2A301C",
+      "#537A9F",
+      "#B6BEC2"
+    ],
+    "description": "A suburban house at dusk with a city skyline in the background.",
+    "mood": "calm",
+    "open_space_location": "lower-left",
+    "aligns_with_brand": true,
+    "reason": "Photorealistic suburban home, correct for brand",
+    "created_at": "2026-07-22T21:02:04.922411"
+  },
+  {
+    "id": "bg_04",
+    "image_path": "/home/selwyn/Documents/Automation-experiments/Jims Video Gen/backgrounds/energy_center_usa/bg_04.png",
+    "dominant_colors": [
+      "#2D3128",
+      "#729CC2",
+      "#D2C4B3"
+    ],
+    "description": "A modern house with a city skyline at sunset in the background.",
+    "mood": "calm",
+    "open_space_location": "lower-left",
+    "aligns_with_brand": true,
+    "reason": "Photorealistic suburban home, correct for brand",
+    "created_at": "2026-07-22T21:04:00.132242"
+  },
+  {
+    "id": "bg_05",
+    "image_path": "/home/selwyn/Documents/Automation-experiments/Jims Video Gen/backgrounds/energy_center_usa/bg_05.png",
+    "dominant_colors": [
+      "#2F311D",
+      "#5A79A7",
+      "#B8ABB5"
+    ],
+    "description": "A spacious suburban house with a city skyline in the distance at sunset.",
+    "mood": "calm",
+    "open_space_location": "center",
+    "aligns_with_brand": true,
+    "reason": "Photorealistic suburban home, correct for brand",
+    "created_at": "2026-07-22T21:05:38.728509"
+  },
+  {
+    "id": "bg_06",
+    "image_path": "/home/selwyn/Documents/Automation-experiments/Jims Video Gen/backgrounds/energy_center_usa/bg_06.png",
+    "dominant_colors": [
+      "#373221",
+      "#7D86AE",
+      "#CFC9C9"
+    ],
+    "description": "A suburban house with a city skyline in the background at sunset.",
+    "mood": "calm",
+    "open_space_location": "left side",
+    "aligns_with_brand": true,
+    "reason": "Photorealistic suburban home, correct for brand",
+    "created_at": "2026-07-22T21:06:29.426022"
+  },
+  {
+    "id": "bg_07",
+    "image_path": "/home/selwyn/Documents/Automation-experiments/Jims Video Gen/backgrounds/energy_center_usa/bg_07.png",
+    "dominant_colors": [
+      "#323D21",
+      "#7991B0",
+      "#D6C8C1"
+    ],
+    "description": "A modern house with a large lawn and city skyline in the background at sunset.",
+    "mood": "calm",
+    "open_space_location": "lower-left",
+    "aligns_with_brand": true,
+    "reason": "Photorealistic suburban home, correct for brand",
+    "created_at": "2026-07-22T21:08:19.200005"
+  },
+  {
+    "id": "bg_08",
+    "image_path": "/home/selwyn/Documents/Automation-experiments/Jims Video Gen/backgrounds/energy_center_usa/bg_08.png",
+    "dominant_colors": [
+      "#242B1F",
+      "#779EBE",
+      "#D8E2DA"
+    ],
+    "description": "A suburban house in the foreground with a city skyline in the distance at sunset.",
+    "mood": "calm",
+    "open_space_location": "center-right",
+    "aligns_with_brand": true,
+    "reason": "Photorealistic suburban home, correct for brand",
+    "created_at": "2026-07-22T21:10:07.844084"
+  },
+  {
+    "id": "bg_09",
+    "image_path": "/home/selwyn/Documents/Automation-experiments/Jims Video Gen/backgrounds/energy_center_usa/bg_09.png",
+    "dominant_colors": [
+      "#2C3219",
+      "#778799",
+      "#C6C4C3"
+    ],
+    "description": "A suburban house with a view of a city skyline at sunset.",
+    "mood": "calm",
+    "open_space_location": "left",
+    "aligns_with_brand": true,
+    "reason": "Photorealistic suburban home, correct for brand",
+    "created_at": "2026-07-22T21:11:58.068074"
+  },
+  {
+    "id": "bg_10",
+    "image_path": "/home/selwyn/Documents/Automation-experiments/Jims Video Gen/backgrounds/energy_center_usa/bg_10.png",
+    "dominant_colors": [
+      "#1D250E",
+      "#C3C8D1",
+      "#695E59"
+    ],
+    "description": "A house with a city skyline in the background at sunset.",
+    "mood": "calm",
+    "open_space_location": "lower-left",
+    "aligns_with_brand": true,
+    "reason": "Photorealistic suburban home, correct for brand",
+    "created_at": "2026-07-22T21:13:59.476082"
+  }
+]
