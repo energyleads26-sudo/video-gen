@@ -529,46 +529,29 @@ BRAND_MUSIC_DUCK_VOLUME = 0.08   # music level while narration is present
 BRAND_MUSIC_FADEOUT_S   = 2.0    # fade out over the final N seconds
 BRAND_MUSIC_CACHE_DIR   = os.path.join(os.path.dirname(os.path.abspath(__file__)), "bg_musics", "generated")
 
+# One pre-generated bed per brand, created ONCE by generate_music_beds.py.
+# The pipeline never calls the Eleven Music API at render time anymore:
+# dynamic video durations made the old (prompt, duration) cache key miss on
+# every single run, silently re-billing an Eleven Music generation per video.
+# The bed is looped and trimmed to fit any video length in mix_brand_audio.
+BRAND_MUSIC_BED_PATHS = {
+    "energy_center_usa": os.path.join(BRAND_MUSIC_CACHE_DIR, "bed_energy_center_usa.mp3"),
+    "be_neutral_now":    os.path.join(BRAND_MUSIC_CACHE_DIR, "bed_be_neutral_now.mp3"),
+}
 
-def generate_music_bed(prompt: str, duration_seconds: float, out_path: str) -> str | None:
-    """Generates an instrumental music bed via the Eleven Music API
-    (POST /v1/music). Returns the local mp3 path, or None on any failure
-    so the caller can fall back to the static MUSIC_MAP files -- a video
-    should never fail over its background music. Results are cached by
-    (prompt, rounded duration) so repeated runs with the same designer
-    output don't re-bill."""
-    if not ELEVENLABS_API_KEY:
-        print("  ⚠ ELEVENLABS_API_KEY not set -- falling back to static music file")
-        return None
 
-    os.makedirs(BRAND_MUSIC_CACHE_DIR, exist_ok=True)
-    import hashlib
-    cache_key = hashlib.sha1(f"{prompt}|{int(duration_seconds)}".encode()).hexdigest()[:16]
-    cached = os.path.join(BRAND_MUSIC_CACHE_DIR, f"music_{cache_key}.mp3")
-    if os.path.exists(cached):
-        print(f"  ✅ Cached music bed ({cache_key})")
-        return cached
-
-    try:
-        resp = requests.post(
-            "https://api.elevenlabs.io/v1/music",
-            headers={"xi-api-key": ELEVENLABS_API_KEY},
-            json={
-                "prompt": prompt,
-                "music_length_ms": int(duration_seconds * 1000),
-            },
-            timeout=180,
-        )
-        if resp.status_code != 200:
-            print(f"  ⚠ Eleven Music HTTP {resp.status_code}: {resp.text[:200]} -- falling back")
-            return None
-        with open(cached, "wb") as f:
-            f.write(resp.content)
-        print(f"  🎵 Music bed generated ({len(resp.content)//1024}KB, {duration_seconds:.0f}s)")
-        return cached
-    except Exception as e:
-        print(f"  ⚠ Eleven Music failed: {e} -- falling back")
-        return None
+def get_brand_music_bed(brand: str) -> str | None:
+    """Returns the pre-generated static music bed for a brand, or None if
+    it hasn't been generated yet (run generate_music_beds.py once) so the
+    caller falls back to the static MUSIC_MAP files. Zero API calls, zero
+    cost, identical music identity across every video of a brand."""
+    path = BRAND_MUSIC_BED_PATHS.get(brand)
+    if path and os.path.exists(path) and os.path.getsize(path) > 10000:
+        print(f"  🎵 Using pre-generated brand bed: {os.path.basename(path)}")
+        return path
+    print(f"  ⚠ No pre-generated music bed for '{brand}' "
+          f"(run generate_music_beds.py once) -- falling back to static file")
+    return None
 
 
 def designer_plan(transcript_text: str, whisper_segments: list, brand: str,
@@ -630,7 +613,7 @@ HARD RULES:
 - accent_hex for image sections MUST be chosen to contrast well against that image's listed dominant colors; for flat sections use one of the two brand accents
 - sections must tile [0, {total_duration:.1f}] exactly: first starts at 0, each starts where the previous ended, last ends at {total_duration:.1f}
 - section boundaries MUST land on transcript segment boundaries (use the timestamps shown)
-- 3 to 7 sections total for a video of this length
+- NO SECTION MAY BE LONGER THAN 60 SECONDS. Long narration or numbers stretches must be split into multiple consecutive sections, each with its own background choice, rotating image ids so the same image never appears in two consecutive image sections. Create as many sections as the duration requires (a 7+ minute video typically needs 8-14 sections)
 - music prompt: instrumental only, no vocals, matches this style direction: {cfg['music_style']}"""
 
     resp = gpt4o_call(
@@ -666,7 +649,32 @@ HARD RULES:
             break
     if fixed:
         fixed[-1]["end"] = round(total_duration, 2)
-    plan["sections"] = fixed
+
+    # Enforce the 60s section cap mechanically -- never trust the spec
+    # blind. Any section longer than MAX_SECTION_S is split into equal
+    # parts, and image sections rotate to a different library image per
+    # part so a 2+ minute stretch never Ken-Burns-loops one photo.
+    MAX_SECTION_S = 60.0
+    usable_ids = [e["id"] for e in usable]
+    split_out = []
+    img_rot = 0
+    for s in fixed:
+        length = s["end"] - s["start"]
+        if length <= MAX_SECTION_S:
+            split_out.append(s)
+            continue
+        n_parts = int(math.ceil(length / MAX_SECTION_S))
+        part_len = length / n_parts
+        for p in range(n_parts):
+            part = dict(s)
+            part["start"] = round(s["start"] + p * part_len, 2)
+            part["end"] = round(s["start"] + (p + 1) * part_len, 2) if p < n_parts - 1 else s["end"]
+            if part.get("background", {}).get("type") == "image" and usable_ids:
+                part["background"] = {"type": "image",
+                                      "id": usable_ids[img_rot % len(usable_ids)]}
+                img_rot += 1
+            split_out.append(part)
+    plan["sections"] = split_out
     plan.setdefault("music", {})
     plan["music"].setdefault("prompt", cfg["music_style"])
     plan["music"]["duck_volume"] = BRAND_MUSIC_DUCK_VOLUME
@@ -738,15 +746,19 @@ def mix_brand_audio(video_path: str, narration_path: str, music_path: str | None
     """Muxes narration + (optional) ducked music under the final video.
     Music sits at duck_volume for the whole runtime (narration is nearly
     continuous in these shorts) and fades out over the final
-    fadeout_seconds. Failure falls back to narration-only rather than
-    failing the video."""
+    fadeout_seconds. The music input is looped (-stream_loop -1) so a
+    fixed-length pre-generated brand bed covers ANY video duration --
+    shorter videos trim it, longer videos loop it, and the trailing
+    afade ensures the ending is clean either way. Failure falls back to
+    narration-only rather than failing the video."""
     if music_path and os.path.exists(music_path):
         fade_start = max(0.0, duration - fadeout_seconds)
         fc = (
             f"[2:a]volume={duck_volume},afade=t=out:st={fade_start:.2f}:d={fadeout_seconds:.2f}[m];"
             f"[1:a][m]amix=inputs=2:duration=first:dropout_transition=2:normalize=0,aresample=48000[aout]"
         )
-        cmd = ["ffmpeg", "-y", "-i", video_path, "-i", narration_path, "-i", music_path,
+        cmd = ["ffmpeg", "-y", "-i", video_path, "-i", narration_path,
+               "-stream_loop", "-1", "-i", music_path,
                "-filter_complex", fc, "-map", "0:v", "-map", "[aout]",
                "-c:v", "copy", "-c:a", "aac", "-b:a", "192k", "-ar", "48000",
                "-ac", "2", "-t", str(duration), out_path]
@@ -812,9 +824,8 @@ def render_brand_video(audio_path: str, brand: str, output_path: str,
         bg_desc = bg["id"] if bg["type"] == "image" else "flat"
         print(f"  [{s['start']:6.2f}-{s['end']:6.2f}] {s['kind']:<9} bg={bg_desc:<8} accent={s['accent_hex']}")
 
-    # --- Music bed (generated once per prompt+duration, cached) ---
-    music_path = generate_music_bed(plan["music"]["prompt"], duration,
-                                    os.path.join(BRAND_MUSIC_CACHE_DIR, "bed.mp3"))
+    # --- Music bed (pre-generated once per brand, looped + trimmed to fit) ---
+    music_path = get_brand_music_bed(brand)
     if music_path is None:
         fallback = MUSIC_MAP.get("default")
         music_path = fallback if fallback and os.path.exists(fallback) else None
@@ -827,7 +838,10 @@ def render_brand_video(audio_path: str, brand: str, output_path: str,
     if not beats:
         raise Exception("Story beat analysis returned no beats")
     beats = realign_beat_times(beats, word_list)
-    chunks = group_beats_into_manim_chunks(beats)
+    # 7s chunks (vs the finance channels' 4.5s): ~35-40% fewer codegen
+    # calls/tokens per brand video, and marketing visuals hold better a
+    # beat longer anyway.
+    chunks = group_beats_into_manim_chunks(beats, target_chunk_seconds=7.0)
     restore = _branded_boilerplate_swap(brand)
     try:
         chunk_codes = generate_manim_chunk_code(chunks, topic_hint or brand, brand=brand)
