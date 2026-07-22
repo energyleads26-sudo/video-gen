@@ -676,22 +676,41 @@ HARD RULES:
 
 def composite_section_onto_background(section_clip: str, background_image: str,
                                       out_path: str, duration: float,
-                                      fps: int = 30) -> str:
-    """Puts a rendered Manim section over a background image with a slow
-    Ken Burns zoom, using a SCREEN blend: the near-black brand scene
-    background disappears into the photo while bright text, counters and
-    charts stay fully visible on top. Chosen over alpha rendering or
-    colorkey because it needs zero changes to the proven opaque-mp4 chunk
-    renderer and cannot produce keying artifacts -- the whole existing
-    safety/fallback machinery stays untouched."""
+                                      fps: int = 30, zoom_out: bool = False) -> str:
+    """Puts a rendered Manim section over a background image with ONE slow
+    Ken Burns move spanning the entire section, using a SCREEN blend: the
+    near-black brand scene background disappears into the photo while
+    bright text, counters and charts stay fully visible on top.
+
+    Three deliberate choices here:
+    1. The blend runs in RGB (gbrp), NOT yuv420p. Screen math applied to
+       YUV chroma planes pushes neutral chroma (128) toward ~191 on both
+       U and V, tinting the whole frame magenta -- this was the pink wash
+       bug. Convert to yuv420p only after blending.
+    2. The zoom is LINEAR across the full section duration via the output
+       frame counter 'on' (1.00 -> 1.08, or reversed when zoom_out=True).
+       The old fixed per-frame increment hit its cap in ~7s then froze,
+       and every section restarted at 1.0, reading as a cheap loop.
+    3. The background is softly blurred and darkened before the blend so
+       white text and icons stay legible no matter where they land, and
+       AI-photo artifacts read as intentional out-of-focus b-roll.
+    Chosen over alpha rendering or colorkey because it needs zero changes
+    to the proven opaque-mp4 chunk renderer and cannot produce keying
+    artifacts -- the whole existing safety/fallback machinery stays
+    untouched."""
     frames = max(int(duration * fps), fps)
-    zoom_expr = "min(zoom+0.0006,1.12)"
+    if zoom_out:
+        zoom_expr = f"1.08-0.08*on/{frames}"
+    else:
+        zoom_expr = f"1+0.08*on/{frames}"
     fc = (
         f"[0:v]scale={OUTPUT_WIDTH * 2}:-1,"
         f"zoompan=z='{zoom_expr}':x='iw/2-(iw/zoom/2)':y='ih/2-(ih/zoom/2)'"
         f":d={frames}:s={OUTPUT_WIDTH}x{OUTPUT_HEIGHT}:fps={fps},"
-        f"format=yuv420p[bg];"
-        f"[1:v]format=yuv420p[fg];"
+        f"gblur=sigma=5,"
+        f"eq=brightness=-0.16:saturation=0.80,"
+        f"format=gbrp[bg];"
+        f"[1:v]format=gbrp[fg];"
         f"[bg][fg]blend=all_mode=screen,format=yuv420p[out]"
     )
     cmd = [
@@ -828,6 +847,8 @@ def render_brand_video(audio_path: str, brand: str, output_path: str,
         return plan["sections"][-1]
 
     composited = []
+    image_section_count = 0  # alternates Ken Burns direction so back-to-back
+                             # image sections don't all snap back to zoom-in
     for i, (chunk, clip) in enumerate(zip(chunks, clip_paths)):
         mid = (chunk["start_time"] + chunk["end_time"]) / 2.0
         section = _section_for(mid)
@@ -838,7 +859,9 @@ def render_brand_video(audio_path: str, brand: str, output_path: str,
             out = clip.replace(".mp4", f"_comp{i:03d}.mp4")
             composited.append(
                 composite_section_onto_background(clip, image_path, out,
-                                                  chunk_dur, fps=fps))
+                                                  chunk_dur, fps=fps,
+                                                  zoom_out=(image_section_count % 2 == 1)))
+            image_section_count += 1
         else:
             composited.append(clip)
 

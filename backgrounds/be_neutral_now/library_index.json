@@ -1,0 +1,152 @@
+[
+  {
+    "id": "bg_01",
+    "image_path": "/home/selwyn/Documents/Automation-experiments/Jims Video Gen/backgrounds/be_neutral_now/bg_01.png",
+    "dominant_colors": [
+      "#826F4A",
+      "#302D23",
+      "#BEB0A3"
+    ],
+    "description": "A man in a green shirt smiles in front of a modern house with solar panels.",
+    "mood": "warm",
+    "open_space_location": "lower-left",
+    "aligns_with_brand": true,
+    "reason": "The green shirt and warm sunlight align with the target palette.",
+    "created_at": "2026-07-22T04:30:02.046266"
+  },
+  {
+    "id": "bg_02",
+    "image_path": "/home/selwyn/Documents/Automation-experiments/Jims Video Gen/backgrounds/be_neutral_now/bg_02.png",
+    "dominant_colors": [
+      "#434827",
+      "#938C6A",
+      "#E5E2D2"
+    ],
+    "description": "A couple smiling at each other in a green garden with solar panels visible on a roof.",
+    "mood": "warm",
+    "open_space_location": "lower-left",
+    "aligns_with_brand": true,
+    "reason": "The green garden and use of solar energy align with environmental sustainability themes.",
+    "created_at": "2026-07-22T04:32:24.312121"
+  },
+  {
+    "id": "bg_03",
+    "image_path": "/home/selwyn/Documents/Automation-experiments/Jims Video Gen/backgrounds/be_neutral_now/bg_03.png",
+    "dominant_colors": [
+      "#31301C",
+      "#BBBEC0",
+      "#806E57"
+    ],
+    "description": "A family stands together outdoors in a lush garden near a modern house with solar panels.",
+    "mood": "warm",
+    "open_space_location": "upper-left",
+    "aligns_with_brand": false,
+    "reason": "The presence of prominent human subjects reduces focus on green and warm gold tones for a neutral brand.",
+    "created_at": "2026-07-22T04:34:31.151904"
+  },
+  {
+    "id": "bg_04",
+    "image_path": "/home/selwyn/Documents/Automation-experiments/Jims Video Gen/backgrounds/be_neutral_now/bg_04.png",
+    "dominant_colors": [
+      "#A2927C",
+      "#54482A",
+      "#EAE6E0"
+    ],
+    "description": "A family standing happily in front of a house with solar panels.",
+    "mood": "warm",
+    "open_space_location": "upper-left",
+    "aligns_with_brand": true,
+    "reason": "The scene features green elements and renewable energy which aligns with environmental themes.",
+    "created_at": "2026-07-22T04:36:33.728682"
+  },
+  {
+    "id": "bg_05",
+    "image_path": "/home/selwyn/Documents/Automation-experiments/Jims Video Gen/backgrounds/be_neutral_now/bg_05.png",
+    "dominant_colors": [
+      "#656036",
+      "#A6A195",
+      "#EFEDEA"
+    ],
+    "description": "A family standing in front of a modern house with a garden during sunset.",
+    "mood": "warm",
+    "open_space_location": "upper-right",
+    "aligns_with_brand": false,
+    "reason": "The image lacks dominance of green and warm gold tones.",
+    "created_at": "2026-07-22T04:38:48.793151"
+  },
+  {
+    "id": "bg_06",
+    "image_path": "/home/selwyn/Documents/Automation-experiments/Jims Video Gen/backgrounds/be_neutral_now/bg_06.png",
+    "dominant_colors": [
+      "#7A7452",
+      "#343026",
+      "#DACFC2"
+    ],
+    "description": "A father and daughter sit on a porch in a garden with solar panels visible in the background.",
+    "mood": "warm",
+    "open_space_location": "lower-left",
+    "aligns_with_brand": true,
+    "reason": "The green and solar elements match the brand's sustainability theme.",
+    "created_at": "2026-07-22T04:40:54.863190"
+  },
+  {
+    "id": "bg_07",
+    "image_path": "/home/selwyn/Documents/Automation-experiments/Jims Video Gen/backgrounds/be_neutral_now/bg_07.png",
+    "dominant_colors": [
+      "#9F9F9D",
+      "#554833",
+      "#E7E4DD"
+    ],
+    "description": "A couple standing in front of a modern house with solar panels.",
+    "mood": "warm",
+    "open_space_location": "lower-right",
+    "aligns_with_brand": false,
+    "reason": "The image lacks dominant green and warm gold tones.",
+    "created_at": "2026-07-22T04:43:07.208082"
+  },
+  {
+    "id": "bg_08",
+    "image_path": "/home/selwyn/Documents/Automation-experiments/Jims Video Gen/backgrounds/be_neutral_now/bg_08.png",
+    "dominant_colors": [
+      "#D9D6D3",
+      "#44412A",
+      "#9B8B64"
+    ],
+    "description": "A person standing in a garden with solar panels and a house in the background during sunset.",
+    "mood": "warm",
+    "open_space_location": "upper-left",
+    "aligns_with_brand": true,
+    "reason": "Incorporates green and warm golden tones along with an eco-friendly theme.",
+    "created_at": "2026-07-22T04:45:10.806220"
+  },
+  {
+    "id": "bg_09",
+    "image_path": "/home/selwyn/Documents/Automation-experiments/Jims Video Gen/backgrounds/be_neutral_now/bg_09.png",
+    "dominant_colors": [
+      "#453B25",
+      "#D8DBDB",
+      "#958561"
+    ],
+    "description": "A family stands happily in front of a solar-powered house surrounded by greenery.",
+    "mood": "warm",
+    "open_space_location": "upper-right",
+    "aligns_with_brand": true,
+    "reason": "The scene emphasizes sustainability with solar panels and green surroundings.",
+    "created_at": "2026-07-22T04:47:06.826190"
+  },
+  {
+    "id": "bg_10",
+    "image_path": "/home/selwyn/Documents/Automation-experiments/Jims Video Gen/backgrounds/be_neutral_now/bg_10.png",
+    "dominant_colors": [
+      "#D1D2D3",
+      "#575346",
+      "#A49377"
+    ],
+    "description": "A family standing outside their home with solar panels, looking content.",
+    "mood": "warm",
+    "open_space_location": "lower-left",
+    "aligns_with_brand": false,
+    "reason": "The palette lacks green and warm gold tones.",
+    "created_at": "2026-07-22T04:49:07.996898"
+  }
+]
